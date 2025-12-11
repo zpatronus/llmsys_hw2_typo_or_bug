@@ -1,16 +1,21 @@
 import random
-import pdb
-
 import embeddings
+from datasets import load_dataset
 
 import sys
 sys.path.append('../')
 import minitorch
 
-from datasets import load_dataset
 
-from minitorch import SimpleOps
-BACKEND = minitorch.TensorBackend(SimpleOps)
+# Change this to "SimpleOps" if you are running on CPU
+backend_name = "CudaKernelOps"
+
+if backend_name == "CudaKernelOps":
+    from minitorch.cuda_kernel_ops import CudaKernelOps
+    BACKEND = minitorch.TensorBackend(CudaKernelOps)
+elif backend_name == "SimpleOps":
+    from minitorch import SimpleOps
+    BACKEND = minitorch.TensorBackend(SimpleOps)
 
 BATCH = 10
 
@@ -19,23 +24,30 @@ def RParam(*shape):
     r = 0.1 * (minitorch.rand(shape, backend=BACKEND) - 0.5)
     return minitorch.Parameter(r)
 
-def cross_entropy_loss(out, y):
-    # BEGIN ASSIGN1_3
+def binary_cross_entropy_loss(out, y):
+    """
+    BCE loss
+    
+    out: output of the neural network, already normalized as we apply sigmoid as last layer (batch_size,)
+    y: true labels [0, 1] (batch_size,)
+    """
+
+    # BEGIN ASSIGN2_3
     # TODO
     # 1. Create ones tensor with same shape as y
     # 2. Compute log softmax of out and (ones - out)
     # 3. Calculate binary cross entropy and take mean
-    # HINT: Use minitorch.tensor_functions.ones, minitorch.nn.logsoftmax
+    # HINT: Use minitorch.tensor_functions.ones
     
     raise NotImplementedError("cross_entropy_loss not implemented")
     
-    # END ASSIGN1_3
+    # END ASSIGN2_3
 
 class Linear(minitorch.Module):
     def __init__(self, in_size, out_size):
         super().__init__()
         
-        # BEGIN ASSIGN1_2
+        # BEGIN ASSIGN2_2
         # TODO
         # 1. Initialize self.weights to be a random parameter of (in_size, out_size).
         # 2. Initialize self.bias to be a random parameter of (out_size)
@@ -44,13 +56,13 @@ class Linear(minitorch.Module):
     
         raise NotImplementedError("Linear not implemented")
     
-        # END ASSIGN1_2
+        # END ASSIGN2_2
 
     def forward(self, x):
         
         batch, in_size = x.shape
         
-        # BEGIN ASSIGN1_2
+        # BEGIN ASSIGN2_2
         # TODO
         # 1. Reshape the input x to be of size (batch, in_size)
         # 2. Reshape self.weights to be of size (in_size, self.out_size)
@@ -60,7 +72,7 @@ class Linear(minitorch.Module):
 
         raise NotImplementedError("Linear forward not implemented")
     
-        # END ASSIGN1_2
+        # END ASSIGN2_2
         
         
 
@@ -87,13 +99,13 @@ class Network(minitorch.Module):
         self.embedding_dim = embedding_dim
         self.dropout_prob = dropout_prob
                 
-        # BEGIN ASSIGN1_2
+        # BEGIN ASSIGN2_2
         # TODO
         # 1. Construct two linear layers: the first one is embedding_dim * hidden_dim, the second one is hidden_dim * 1
 
         raise NotImplementedError("Network not implemented")
         
-        # END ASSIGN1_2
+        # END ASSIGN2_2
         
         
 
@@ -102,7 +114,7 @@ class Network(minitorch.Module):
         embeddings tensor: [batch x sentence length x embedding dim]
         """
     
-        # BEGIN ASSIGN1_2
+        # BEGIN ASSIGN2_2
         # TODO
         # 1. Average the embeddings on the sentence length dimension to obtain a tensor of (batch, embedding_dim)
         # 2. Apply the first linear layer
@@ -113,7 +125,7 @@ class Network(minitorch.Module):
         
         raise NotImplementedError("Network forward not implemented")
     
-        # END ASSIGN1_2
+        # END ASSIGN2_2
 
 
 # Evaluation helper methods
@@ -196,18 +208,17 @@ class SentenceSentimentTrain:
             ):
                 out=None
                 
-                # BEGIN ASSIGN1_3
+                # BEGIN ASSIGN2_3
                 # TODO
                 # 1. Create x and y using minitorch.tensor function through the SimpleOps backend (cpu backend)
-                # 2. Set requires_grad=True for x and y
-                # 3. Get the model output (as out)
-                # 4. Calculate the loss using Binary Crossentropy Loss
-                # 5. Call backward function of the loss
-                # 6. Use Optimizer to take a gradient step
+                # 2. Get the model output (as out)
+                # 3. Calculate the loss using binary_cross_entropy_loss function
+                # 4. Call backward function of the loss
+                # 5. Use Optimizer to take a gradient step
                 
                 raise NotImplementedError("SentenceSentimentTrain train not implemented")
 
-                # END ASSIGN1_3
+                # END ASSIGN2_3
                 
                 
                 # Save training results
@@ -221,7 +232,7 @@ class SentenceSentimentTrain:
                 (X_val, y_val) = data_val
                 model.eval()
                 
-                # BEGIN ASSIGN1_3
+                # BEGIN ASSIGN2_3
                 # TODO
                 # 1. Create x and y using minitorch.tensor function through our CudaKernelOps backend
                 # 2. Get the output of the model
@@ -230,7 +241,7 @@ class SentenceSentimentTrain:
                 
                 raise NotImplementedError("SentenceSentimentTrain train not implemented")
                 
-                # END ASSIGN1_3
+                # END ASSIGN2_3
                 
                 model.train()
 
@@ -272,7 +283,7 @@ def encode_sentiment_data(dataset, pretrained_embeddings, N_train, N_val=0):
 
     #  Determine max sentence length for padding
     max_sentence_len = 0
-    for sentence in dataset["train"]["sentence"] + dataset["validation"]["sentence"]:
+    for sentence in list(dataset["train"]["sentence"]) + list(dataset["validation"]["sentence"]):
         max_sentence_len = max(max_sentence_len, len(sentence.split()))
 
     unks = set()
