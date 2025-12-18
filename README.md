@@ -4,16 +4,16 @@ The goal of this assignment is to implement a basic deep learning framework, min
 
 ## Environment Setup
 
-The starting code base is provided in [llmsys_f25_hw2](https://github.com/llmsystem/llmsys_f25_hw2).
+The starting code base is provided in [llmsys_hw2](https://github.com/llmsystem/llmsys_hw2).
 
-Please check your version of Python (Python 3.8+), run either:
+Please check your version of Python (Python 3.12+), run either:
 
 ```bash
 python --version
 python3 --version
 ```
 
-We also highly recommend setting up a virtual environment. The virtual environment lets you install packages that are only used for your assignments and do not impact the rest of the system. We recommend venv as it is lightweight and easy to use (<a href="https://docs.python.org/3/tutorial/venv.html">Tutorial</a>).
+We also highly recommend setting up a virtual environment. The virtual environment lets you install packages that are only used for your assignments and do not impact the rest of the system. We recommend `venv` as it is lightweight and easy to use (<a href="https://docs.python.org/3/tutorial/venv.html">Tutorial</a>). `uv` is also a good option as it is possible to select a specific python version for your virtual enviroment.
 
 Run the following command:
 
@@ -25,13 +25,12 @@ source venv/bin/activate
 Then clone the starter codes from the git repo and install packages.
 
 ```bash
-git clone https://github.com/llmsystem/llmsys_f25_hw2.git
+git clone https://github.com/llmsystem/llmsys_hw2.git
 cd llmsys_f25_hw2
 # If you are using PSC, 
 # please load the CUDA module before installing packages:
-# module load cuda/12.4.0
+# module load cuda/12.6.0
 python -m pip install -r requirements.txt
-python -m pip install -r requirements.extra.txt
 python -m pip install -Ue .
 ```
 
@@ -57,7 +56,7 @@ project/
 
 Implement automatic differentiation. We have provided the derivative operations for internal Python operators in `minitorch.Function.backward` call. Your task is to write the two core functions needed for automatic differentiation: `topological_sort` and `backpropagate`. This will allow us to traverse the computation graph and compute the gradients along the way.
 
-Complete the following functions in `minitorch/autodiff.py`. The places where you need to fill in your code are highlighted with `BEGIN ASSIGN1_1` and `END ASSIGN1_1`
+Complete the following functions in `minitorch/autodiff.py`. The places where you need to fill in your code are highlighted with `BEGIN ASSIGN2_1` and `END ASSIGN2_1`
 
 **Note**: Be sure to checkout the functions in `class Variable(Protocol)`!
 
@@ -101,7 +100,7 @@ python -m pytest -l -v -k "autodiff"
 
 ## Problem 2: Neural Network Architecture (30 points)
 
-In this section, you will implement the neural network architecture. Complete the following functions in `run_sentiment.py` under the project folder. The places where you need to fill in your code are highlighted with `BEGIN ASSIGN1_2` and `END ASSIGN1_2`.
+In this section, you will implement the neural network architecture. Complete the following functions in `run_sentiment.py` under the project folder. The places where you need to fill in your code are highlighted with `BEGIN ASSIGN2_2` and `END ASSIGN2_2`.
 
 ### 1. Implement Linear layer
 
@@ -157,7 +156,7 @@ python -m pytest -l -v -k "network"
 
 ## Problem 3: Training and Evaluation (30 points)
 
-In this section, you will implement codes for training and perform training on a simple MLP for the sentence sentiment classification task. The places where you need to fill in your code are highlighted with `BEGIN ASSIGN1_3` and `END ASSIGN1_3`.
+In this section, you will implement codes for training and perform training on a simple MLP for the sentence sentiment classification task. The places where you need to fill in your code are highlighted with `BEGIN ASSIGN2_3` and `END ASSIGN2_3`.
 
 ### 1. Implement cross entropy loss function
 
@@ -194,7 +193,7 @@ You should be able to achieve a best validation accuracy equal to or higher than
 
 ## Submission
 
-Please submit the whole directory `llmsys_f25_hw2` as a zip on canvas. Your code will be automatically compiled and graded with private test cases.
+Please submit the whole directory `llmsys_hw2` as a zip on canvas. Your code will be automatically compiled and graded with private test cases.
 
 ## FAQs
 
